@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\Task\Controllers\TaskController;
+use App\Services\Task\Controllers\TaskStatusController;
 use App\Services\User\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,5 +26,6 @@ Route::prefix('v1')->group(function () {
         'tasks' => TaskController::class
     ]);
 
+    Route::post('update_status/{id}', TaskStatusController::class);
     Route::get('users', UserController::class);
 });

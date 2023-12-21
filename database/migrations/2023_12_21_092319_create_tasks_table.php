@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
+            $table->string('status')->default('backlog');
             $table->foreignId('user_id')->nullable()->index();
             $table->timestamps();
         });
