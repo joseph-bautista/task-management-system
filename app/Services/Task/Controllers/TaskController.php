@@ -3,24 +3,24 @@
 namespace App\Services\Task\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CreatedSuccessResponse;
+use App\Http\Resources\DataJsonResponse;
+use App\Http\Resources\DeletedSuccessResponse;
+use App\Http\Resources\UpdatedSuccessResponse;
+use App\Services\Task\Models\Task;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    use ApiResponse;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $tasks = Task::with('user')->orderBy('created_at', 'DESC')->get();
+        return $this->successResponse(new DataJsonResponse($tasks));
     }
 
     /**
@@ -28,38 +28,44 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $task = Task::create($request->all());
+        $task->user_id = $request->user_id;
+        $task->save();
+        return $this->successResponse(new CreatedSuccessResponse($task,$task->user));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Task $task)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        return $this->successResponse(
+            new DataJsonResponse(
+                $task
+            )
+        );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Task $task)
     {
-        //
+        $task->update($request->all());
+        $task->user_id = $request->user_id;
+        $task->save();
+        return $this->successResponse(
+            new UpdatedSuccessResponse(
+                $task, $task->user
+            )
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Task $task)
     {
-        //
+        return $this->successResponse(new DeletedSuccessResponse($task->delete()));
     }
 }
